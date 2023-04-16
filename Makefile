@@ -11,7 +11,7 @@ build:                                                    ## Builds the image
 
 alias:                                                    ## Prints the alias required
 	@echo "You can put this in your .bashrc or .bash_aliases:"
-	@echo "\talias symfony='docker run --rm -it -v \`pwd\`:/application -v ~/.gitconfig:/.gitconfig -v ~/.composer:/.composer --user \`id -u\`:\`id -g\` ${IMAGE_NAME}'"
+	@echo "\talias symfony='docker run --rm -it -v \`pwd\`:/application -v ~/.gitconfig:/application/.gitconfig -v ~/.composer:/application/.composer --user \`id -u\`:\`id -g\` ${IMAGE_NAME}'"
 
 ##
 ## Internals

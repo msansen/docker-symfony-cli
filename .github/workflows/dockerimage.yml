@@ -12,6 +12,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [ "7.4", "8.0", "8.1", "8.2" ]
     steps:
     - uses: actions/checkout@v2
     - name: Login to github registry
@@ -19,12 +22,22 @@ jobs:
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Build :latest
+    - name: Build :version
       if: success()
-      run: docker build -t ${DOCKER_REPOSITORY}:latest .
+      run: docker build --build-arg PHP_VERSION=${{ matrix.version }} -t ${DOCKER_REPOSITORY}:${{ matrix.version }} .
+
+    - name: Push to docker hub :version
+      if: success()
+      uses: actions-hub/docker@master
+      with:
+        args: push ${DOCKER_REPOSITORY}:${{ matrix.version }}
+
+    - name: Build :version
+      if: ${{ success() && matrix.version == '8.2' }}
+      run: docker tag ${DOCKER_REPOSITORY}:${{ matrix.version }} ${DOCKER_REPOSITORY}:latest
 
     - name: Push to docker hub :latest
-      if: success()
+      if: ${{ success() && matrix.version == '8.2' }}
       uses: actions-hub/docker@master
       with:
         args: push ${DOCKER_REPOSITORY}:latest
